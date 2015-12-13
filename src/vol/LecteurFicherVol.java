@@ -1,22 +1,26 @@
 package vol;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class LecteurFicherVol {
 	
-	public static final String CARACTERE_SEPARATEUR = ";";
-	public static final int NB_PARAM_VOL = 6;
-	public static final int INDICE_NUM_VOL = 0;
-	public static final int INDICE_DESINATION = 1;
-	public static final int INDICE_DATE_VOL = 2;
-	public static final int INDICE_NB_PLACE = 3;
-	public static final int INDICE_COMPAGNIE = 4;
-	public static final int INDICE_PRIX = 5 ;
+	private static final String CARACTERE_SEPARATEUR = ";";
+	private static final int NB_PARAM_VOL = 6;
+	private static final int INDICE_NUM_VOL = 0;
+	private static final int INDICE_DESINATION = 1;
+	private static final int INDICE_DATE_VOL = 2;
+	private static final int INDICE_NB_PLACE = 3;
+	private static final int INDICE_COMPAGNIE = 4;
+	private static final int INDICE_PRIX = 5 ;
 
-	public static ArrayList<Vol> ficherTextToList(String chemin){
+	public static ArrayList<Vol> ficherTextToList(String chemin) throws FileNotFoundException{
+		//creation du fichier 
+		File ficher = new File(chemin);
 		//creation d'un scanner
-		Scanner sc = new Scanner(chemin);
+		Scanner sc = new Scanner(ficher);
 		//liste contenant les vol
 		ArrayList<Vol> vols = new ArrayList<Vol>(); 
 		while(sc.hasNext()){

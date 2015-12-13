@@ -42,7 +42,11 @@ public class Vol {
 	public float getPrix() {
 		return prix;
 	}
-	
-	
-	
+
+	@Override
+	public String toString() {
+		return "Vol [numero=" + numero + ", destination=" + destination
+				+ ", date=" + date + ", nbPlace=" + nbPlace + ", compagnie="
+				+ compagnie + ", prix=" + prix + "]";
+	}
 }
