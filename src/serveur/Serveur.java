@@ -15,6 +15,10 @@ public class Serveur implements Runnable {
 		System.out.println("Serveur lancer");
 	}
 	
+	public ServerSocket getSocketServeur(){
+		return this.socketServeur;
+	}
+	
 
 	@Override
 	public void run() {

@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class Client {
+public class ClientSecondaire {
 	
 	private final static int PORT = 3000;
 	private final static String HOST = "localhost"; 
