@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import service.ServiceReservation;
+
 public class Serveur implements Runnable {
 	
 	private ServerSocket socketServeur;
@@ -12,7 +14,6 @@ public class Serveur implements Runnable {
 	public Serveur( int port) throws IOException{
 		this.socketServeur = new ServerSocket(port);
 		this.t = new Thread(this);
-		System.out.println("Serveur lancer");
 	}
 	
 	public ServerSocket getSocketServeur(){
@@ -25,20 +26,28 @@ public class Serveur implements Runnable {
 		//creation d'un service de reservation de vol
 		//SERVICE A CREER
 		//SERVICE A LANCER
-		while(true){
 			//acceptation des connexions par les clients
 			try {
-				Socket client = this.socketServeur.accept();
+				while(true){
+					//creation de la socket du client
+					Socket socketClient = this.getSocketServeur().accept();
+					System.out.println("connexion avec le client reussi ");
+					//creation du service
+					ServiceReservation serviceReservation = new ServiceReservation(socketClient);
+					//lancement du service
+					serviceReservation.lancer();
+				}
+				
 			} catch (IOException e) {
 				System.out.println(e.toString());
 			}
-		}
 	}
 	/**
 	 * methode de lancement du thread
 	 */
 	public void lancer(){
 		this.t.start();
+		System.out.println("Serveur lancer");
 	}
 	/**
 	 * methode d'interruption du thread

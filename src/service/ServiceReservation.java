@@ -41,7 +41,11 @@ public class ServiceReservation implements Runnable{
 		//Streams pour le serveur
 		BufferedReader sin = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		PrintWriter sout = new PrintWriter(client.getOutputStream(), true);
-		//variables contenant les infos (destination, date et nombre de place)
+		while(!client.isClosed()){
+			sout.print("message de test service ->client");
+		}
+		
+		/*//variables contenant les infos (destination, date et nombre de place)
 		String clientDestination;
 		String clientDate;
 		int clientNbPlace;
@@ -51,7 +55,7 @@ public class ServiceReservation implements Runnable{
 		clientDestination = sin.readLine();
 		sout.print("Vous avez choisi la destination : " +clientDestination);
 		//recuperation des info necessaire à la réservation
-		
+		*/
 		
 	}
 	
