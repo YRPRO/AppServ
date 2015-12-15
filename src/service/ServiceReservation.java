@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class ServiceReservation implements Runnable{
 	private Socket client;
@@ -41,21 +42,23 @@ public class ServiceReservation implements Runnable{
 		//Streams pour le serveur
 		BufferedReader sin = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		PrintWriter sout = new PrintWriter(client.getOutputStream(), true);
-		while(!client.isClosed()){
-			sout.print("message de test service ->client");
+		//sout.println("Client vous etes connecter et pres a reserver !");
+		String reponse ="";
+		String reponseClient = "";
+		sout.println("Nouvelle session ");
+		sout.flush();
+		while(!reponseClient.equals("stop")){
+			reponseClient = sin.readLine();
+			System.out.println("Client : " + reponseClient);
+			Scanner sc = new Scanner(System.in);
+			reponse = sc.nextLine();
+			sout.println(reponse);
+			sout.flush();
 		}
+		//FERMETURE DE LA SOCKET ET TERMINAISON DU THREAD
+		this.client.close();
+		this.terminer();
 		
-		/*//variables contenant les infos (destination, date et nombre de place)
-		String clientDestination;
-		String clientDate;
-		int clientNbPlace;
-		//message d'accueil + instruction
-		sout.print("Bienvenue dans notre service de réservation.\n"+"Veuillez suivre les instructions \n" );
-		sout.print("Quelle est la destination ? \n");
-		clientDestination = sin.readLine();
-		sout.print("Vous avez choisi la destination : " +clientDestination);
-		//recuperation des info necessaire à la réservation
-		*/
 		
 	}
 	

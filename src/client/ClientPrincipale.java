@@ -31,23 +31,24 @@ public class ClientPrincipale implements Runnable{
 		this.t.start();
 	}
 	
+	public void terminer(){
+		this.t.interrupt();
+	}
+	
 	public void traitement() throws IOException{
 		//creation de stream d'acces au service
-		//Streams pour le serveur
 		BufferedReader sin = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
 		PrintWriter sout = new PrintWriter(socketClient.getOutputStream(), true);
-		while(!socketClient.isClosed()){
-			String rep = sin.readLine();
-			System.out.println(rep);
-		}
-		/*Scanner sc = new Scanner(System.in);
-		String reponseClient;
-		//attente de la reponse
-		System.out.println(sin.readLine());
-		reponseClient = sc.next();
-		//envoi de la reponse
-		sout.print(reponseClient);
 		
-		sc.close();*/
+		
+		//REPONSE VERS LE SERVEUR
+		while(true){
+			String message = sin.readLine();
+			System.out.println("Serveur : " +message);
+			Scanner sc = new Scanner(System.in);
+			String reponse = sc.nextLine();
+			sout.println(reponse);
+			sout.flush();
+		}
 	}
 }
