@@ -39,16 +39,36 @@ public class ClientPrincipale implements Runnable{
 		//creation de stream d'acces au service
 		BufferedReader sin = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
 		PrintWriter sout = new PrintWriter(socketClient.getOutputStream(), true);
-		
-		
+		Scanner sc = new Scanner(System.in);
+		String message = "";
 		//REPONSE VERS LE SERVEUR
 		while(true){
-			String message = sin.readLine();
-			System.out.println("Serveur : " +message);
-			Scanner sc = new Scanner(System.in);
-			String reponse = sc.nextLine();
-			sout.println(reponse);
-			sout.flush();
+			dialogue(sc, sin, sout);
 		}
 	}
+	
+	private static void dialogue(Scanner sc, BufferedReader sin, PrintWriter sout) throws IOException{
+		String message = "";
+		String reponse = "";
+		while(true){
+			//Réception du message
+			message = sin.readLine();
+			//Vérification si le service s'est arrété
+			if(message.equals("Stop")){
+				return ;
+			}
+			
+			//Vérification si le serveur attend une réponse
+			if(message.equals("AttenteReponse")){
+				reponse = sc.nextLine();
+				sout.println(reponse);
+				sout.flush();
+			}
+			
+			//Affichage du message s'il doit être affiché
+			else
+				System.out.println("Serveur : " +message);
+		}
+	}
+	
 }
