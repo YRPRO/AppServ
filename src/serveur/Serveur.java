@@ -24,9 +24,7 @@ public class Serveur implements Runnable {
 	@Override
 	public void run() {
 		//creation d'un service de reservation de vol
-		//SERVICE A CREER
-		//SERVICE A LANCER
-			//acceptation des connexions par les clients
+		//acceptation des connexions par les clients
 			try {
 				while(true){
 					//creation de la socket du client
