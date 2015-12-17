@@ -44,7 +44,10 @@ public class ServiceReservation implements Runnable{
 	public void terminer(){
 		this.t.interrupt();
 	}
-	
+	/**
+	 * Méthode contenant le traitement du service 
+	 * @throws IOException
+	 */
 	public void traitement() throws IOException{
 		//Streams pour le serveur
 		BufferedReader sin = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -60,13 +63,21 @@ public class ServiceReservation implements Runnable{
 		String destination = "";
 		String date = "";
 		int nbPersonne = 0;
-		List<Vol> vols = new ArrayList<Vol>();
-		
+		List<Vol> volsTrouver = new ArrayList<Vol>();
+		//envoi des vol dispo
+		sout.println("vols dispo \n" + this.vols.toString());
+		sout.flush();
 		while(!reponseDuClient.equals("stop")){
 	
-			dialogueRechercheVol(sin, sout, destination, date, nbPersonne);
-			vols = rechercheVol(destination, date, nbPersonne);
-			sout.println(vols);
+			destination = dialogueDemandeDestination(sin, sout);
+			date = dialogueDemandeDate(sin, sout);
+			nbPersonne = dialogueDemandeNbPlace(sin, sout);
+			volsTrouver = rechercheVol(destination, date, nbPersonne);
+			
+			if(!volsTrouver.isEmpty())
+				sout.println(volsTrouver.toString());
+			else
+				sout.println("Aucun vol n'est disponible pour vos critères ");
 			
 		}
 		sout.println("stop");
@@ -77,55 +88,105 @@ public class ServiceReservation implements Runnable{
 	
 	
 	//A Voir si on garde
-	private static void envoieMessage(String message, PrintWriter sout) throws IOException{	
+	private void envoieMessage(String message, PrintWriter sout) throws IOException{	
 		sout.println(message);
 		sout.flush();
 		sout.println("AttenteReponse");
 		sout.flush();
 	}
 	
-	
-	private static void dialogueRechercheVol(BufferedReader sin, PrintWriter sout, String destination, String date, int nbPersonne) throws IOException{
-		
+	/**
+	 * Methode permetant la demande de la destination au client
+	 * @param sin le PrintWriter attribué à la socket 
+	 * @param sout le BufferedReader attribué à la socket 
+	 * @return la destination (String) une fois saisie et verifiée
+	 * @throws IOException
+	 */
+	private String dialogueDemandeDestination(BufferedReader sin, PrintWriter sout) throws IOException{
+		String destination;
 		envoieMessage("Quel est votre déstination ?", sout);
 		destination = sin.readLine();
 		while(!verifDestination(destination)){
 			envoieMessage("Veuillez entrer une destination valide", sout);
 			destination = sin.readLine();
 		}
-		
+		return destination;
+	}
+	/**
+	 * Methode permetant la demande de la date de depart au client
+	 * @param sin le PrintWriter attribué à la socket 
+	 * @param sout le BufferedReader attribué à la socket 
+	 * @return la date (String) une fois saisie et verifiée
+	 * @throws IOException
+	 */
+	private String dialogueDemandeDate(BufferedReader sin, PrintWriter sout) throws IOException{
+		String date;
 		envoieMessage("Quel est la date de départ ?", sout);
 		date = sin.readLine();
 		while(!verifDate(date)){
 			envoieMessage("Veuillez entrer une date valide", sout);
 			date = sin.readLine();
 		}
-		
-		envoieMessage("Combien de place sougaitait vous réserver", sout);
+		return date;
+	}
+	/**
+	 * Methode permetant le nombre de place à reserver au client
+	 * @param sin le PrintWriter attribué à la socket 
+	 * @param sout le BufferedReader attribué à la socket 
+	 * @return le nombre de place (int) une fois saisie et verifiée
+	 * @throws IOException
+	 */
+	private int dialogueDemandeNbPlace(BufferedReader sin, PrintWriter sout) throws IOException{
+		int nbPersonne ;
+		envoieMessage("Combien de place(s) souhaitez vous réserver", sout);
 		nbPersonne = Integer.parseInt(sin.readLine());
 		
 		while(!verifNbPlace(nbPersonne)){
 			envoieMessage("Veuillez entrer un nombre de place valide", sout);
 			nbPersonne = Integer.parseInt(sin.readLine());
 		}
+		return nbPersonne;
 	}
 	
 	
-	private static boolean verifDestination(String destination){
+	/**
+	 * Permet la verification (au niveau syntaxique) de la destination entrer par le client
+	 * @param destination la chaine à verifier 
+	 * @return true si la syntaxe est correcte false sinon
+	 */
+	private  boolean verifDestination(String destination){
 		return (destination.length() != 0);
 	}
-	private static boolean verifDate(String date){	
-		return (date.length()!=0 && date.matches("^(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}$")) ;
+	/**
+	 * Permet la verification (au niveau syntaxique) avec une éxpression régulière de la date entrer par le client
+	 * @param date la chaine à verifier
+	 * @return true si la syntaxe est correcte false sinon
+	 */
+	private  boolean verifDate(String date){	
+		//ancienne regex
+		//"^(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}$"
+		String dateRegex = "^(3[01]|[12][0-9]|0[1-9])/(1[0-2]|0[1-9])/[0-9]{4}$";
+		return (date.length()!=0 && date.matches(dateRegex) );
 	}
-	private static boolean verifNbPlace(int nbPlace){
+	/**
+	 * Permet la verification (au niveau syntaxique) du nombre de place(s) entrer par le client
+	 * @param nbPlace la valeur à verifier
+	 * @return true si la syntaxe est correcte false sinon
+	 */
+	private  boolean verifNbPlace(int nbPlace){
 		return nbPlace !=0;
 	}
-	
+	/**
+	 * méthode permetant de recherche les vols correspondant aux critères du client
+	 * @param destination (String)
+	 * @param date (String)
+	 * @param nbPlace (int)
+	 * @return une liste de vol contenant l'ensemble des vols correspondant aux critères du client
+	 */
 	private List<Vol> rechercheVol(String destination,String date,int nbPlace){
 		List<Vol> volSelectionner = new ArrayList<Vol>(); 
 		for(Vol v : this.vols){
-			if(v.getDestination().equalsIgnoreCase(destination) && v.getDate().equalsIgnoreCase(date) 
-					&& v.getNbPlace() >= nbPlace)
+			if(v.getDestination().equalsIgnoreCase(destination) && v.getDate().equalsIgnoreCase(date) && v.getNbPlace() >= nbPlace)
 				volSelectionner.add(v);
 		}
 		return volSelectionner;
