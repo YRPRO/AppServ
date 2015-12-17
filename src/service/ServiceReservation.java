@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import vol.LecteurFicherVol;
 import vol.Vol;
@@ -67,6 +66,7 @@ public class ServiceReservation implements Runnable{
 	
 			dialogueRechercheVol(sin, sout, destination, date, nbPersonne);
 			vols = rechercheVol(destination, date, nbPersonne);
+			sout.println(vols);
 			
 		}
 		sout.println("stop");
