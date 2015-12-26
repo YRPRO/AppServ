@@ -40,11 +40,15 @@ public class ClientPrincipale implements Runnable{
 		BufferedReader sin = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
 		PrintWriter sout = new PrintWriter(socketClient.getOutputStream(), true);
 		Scanner sc = new Scanner(System.in);
-		String message = "";
+		//String message = "";
 		//REPONSE VERS LE SERVEUR
-		while(true){
-			dialogue(sc, sin, sout);
-		}
+		dialogue(sc, sin, sout);
+		sin.close();
+		sout.close();
+		sc.close();
+		System.out.println("l'application se ferme");
+		this.terminer();
+		
 	}
 	
 	private static void dialogue(Scanner sc, BufferedReader sin, PrintWriter sout) throws IOException{

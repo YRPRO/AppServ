@@ -54,8 +54,8 @@ public class ServiceReservation implements Runnable{
 		PrintWriter sout = new PrintWriter(client.getOutputStream(), true);
 		//sout.println("Client vous etes connecter et pres a reserver !");
 		
-		String reponseAEnvoyer =""; //String pour la réception des messages du client
-		String reponseDuClient = ""; //String pour l'envoie du message au client
+		//String reponseAEnvoyer =""; //String pour la réception des messages du client
+		//String reponseDuClient = ""; //String pour l'envoie du message au client
 		
 		sout.println("Nouvelle session ");
 		sout.flush();
@@ -67,8 +67,7 @@ public class ServiceReservation implements Runnable{
 		//envoi des vol dispo
 		sout.println("vols dispo \n" + this.vols.toString());
 		sout.flush();
-		while(!reponseDuClient.equals("stop")){
-	
+		do {
 			destination = dialogueDemandeDestination(sin, sout);
 			date = dialogueDemandeDate(sin, sout);
 			nbPersonne = dialogueDemandeNbPlace(sin, sout);
@@ -79,10 +78,14 @@ public class ServiceReservation implements Runnable{
 			else
 				sout.println("Aucun vol n'est disponible pour vos critères ");
 			
-		}
-		sout.println("stop");
+			
+			
+		} while(dialogueDemandeNouvelleRecherche(sin, sout));
+		sout.println("Stop");
 		//FERMETURE DE LA SOCKET ET TERMINAISON DU THREAD
 		this.client.close();
+		sout.close();
+		sin.close();
 		this.terminer();
 	}
 	
@@ -130,7 +133,7 @@ public class ServiceReservation implements Runnable{
 		return date;
 	}
 	/**
-	 * Methode permetant le nombre de place à reserver au client
+	 * Methode permetant la demande du nombre de place à reserver au client
 	 * @param sin le PrintWriter attribué à la socket 
 	 * @param sout le BufferedReader attribué à la socket 
 	 * @return le nombre de place (int) une fois saisie et verifiée
@@ -146,6 +149,27 @@ public class ServiceReservation implements Runnable{
 			nbPersonne = Integer.parseInt(sin.readLine());
 		}
 		return nbPersonne;
+	}
+	/**
+	 * Methode permetant la demande d'arret au client
+	 * @param sin le PrintWriter attribué à la socket 
+	 * @param sout le BufferedReader attribué à la socket 
+	 * @return boolean true si le client veut une nouvelle recherche false sinon
+	 * @throws IOException
+	 */
+	private boolean dialogueDemandeNouvelleRecherche(BufferedReader sin, PrintWriter sout) throws IOException {
+		String reponse;
+		envoieMessage("Voulez-vous faire une nouvelle recherche (oui ou non) ?", sout);
+		reponse = sin.readLine();
+		sout.println(reponse);
+		while((!reponse.equals("oui")) && (!reponse.equals("non"))){
+			envoieMessage("Vous devez répondre par oui ou non", sout);
+			reponse = sin.readLine();
+		}
+		if(reponse.equals("oui"))
+			return true;
+		return false;
+		
 	}
 	
 	
