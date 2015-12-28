@@ -1,7 +1,9 @@
 package vol;
 
+import java.io.Serializable;
 
-public class Vol {
+
+public class Vol implements Serializable{
 	
 	private int numero; 
 	private String destination;
@@ -45,8 +47,8 @@ public class Vol {
 
 	@Override
 	public String toString() {
-		return "Vol [numero=" + numero + ", destination=" + destination
-				+ ", date=" + date + ", nbPlace=" + nbPlace + ", compagnie="
-				+ compagnie + ", prix=" + prix + "]";
+		return "[numero=" + numero + "| destination=" + destination
+				+ "| date=" + date + "| nbPlace=" + nbPlace + "| compagnie="
+				+ compagnie + "| prix=" + prix + "]\n";
 	}
 }

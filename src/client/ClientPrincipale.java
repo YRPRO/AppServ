@@ -41,10 +41,13 @@ public class ClientPrincipale implements Runnable{
 		PrintWriter sout = new PrintWriter(socketClient.getOutputStream(), true);
 		Scanner sc = new Scanner(System.in);
 		String message = "";
+		boolean connecter = true;
 		//REPONSE VERS LE SERVEUR
-		while(true){
+		while(connecter){
+			connecter  = this.socketClient.isConnected();
 			dialogue(sc, sin, sout);
 		}
+		this.terminer();
 	}
 	
 	private static void dialogue(Scanner sc, BufferedReader sin, PrintWriter sout) throws IOException{

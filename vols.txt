@@ -1,3 +1,10 @@
 1;NewYork;02/01/2016;150;AirFrance;600
 2;Rio;06/01/2016;200;FlyEmirats;700
 3;Londres;10/02/2016;70;EasyJet;100
+4;Berlin;11/02/2016;50;AirFrance;250
+5;Madrid;12/02/2016;60;RyanAir;175
+6;Pekin;15/03/2016;700;AirChina;300
+7;Tokyo;16/02/2016;800;JapanAirlines;200
+8;Sydney;19/04/2016;810;BritishAirlines;500
+9;Istanbul;20/02/2016;400;TurkishAirlines;150
+10;Moscou;22/02/2016;300;Aeroflot;180
