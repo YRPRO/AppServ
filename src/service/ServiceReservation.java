@@ -51,7 +51,6 @@ public class ServiceReservation implements Runnable{
 		//Streams pour le serveur
 		BufferedReader sin = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		PrintWriter sout = new PrintWriter(client.getOutputStream(), true);
-		//sout.println("Client vous etes connecter et pres a reserver !");
 		
 		//String reponseAEnvoyer =""; //String pour la réception des messages du client
 		//String reponseDuClient = ""; //String pour l'envoie du message au client
@@ -79,8 +78,6 @@ public class ServiceReservation implements Runnable{
 			else
 				sout.println("Aucun vol n'est disponible pour vos critères ");
 			
-			
-			
 		} while(dialogueDemandeNouvelleRecherche(sin, sout));
 		sout.println("Stop");
 		//FERMETURE DE LA SOCKET ET TERMINAISON DU THREAD
@@ -91,7 +88,12 @@ public class ServiceReservation implements Runnable{
 	}
 	
 	
-	//A Voir si on garde
+	/**
+	 * Methode permettant l'envoi d'un message à un client
+	 * @param message le message à envoyer
+	 * @param sout le Printwriter confirmer
+	 * @throws IOException
+	 */
 	private void envoieMessage(String message, PrintWriter sout) throws IOException{	
 		sout.println(message);
 		sout.flush();
