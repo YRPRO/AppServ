@@ -14,7 +14,6 @@ import java.util.Scanner;
 public class LecteurFicherVol {
 	
 	private static final String CARACTERE_SEPARATEUR = ";";
-	private static final int NB_PARAM_VOL = 6;
 	private static final int INDICE_NUM_VOL = 0;
 	private static final int INDICE_DESINATION = 1;
 	private static final int INDICE_DATE_VOL = 2;

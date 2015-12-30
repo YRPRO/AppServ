@@ -38,6 +38,9 @@ public class Serveur implements Runnable {
 				
 			} catch (IOException e) {
 				System.out.println(e.toString());
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 	}
 	/**

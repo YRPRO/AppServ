@@ -1,7 +1,6 @@
 package service;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -17,10 +16,10 @@ public class ServiceReservation implements Runnable{
 	private Thread t;
 	private List<Vol> vols;
 	
-	public  ServiceReservation(Socket s) throws FileNotFoundException {
+	public  ServiceReservation(Socket s) throws ClassNotFoundException, IOException {
 		this.client = s;
 		this.t = new Thread(this);
-		this.vols = LecteurFicherVol.ficherTextToList("vols.txt");
+		this.vols = LecteurFicherVol.serialisationBinToList();
 	}
 	
 
@@ -73,8 +72,10 @@ public class ServiceReservation implements Runnable{
 			nbPersonne = dialogueDemandeNbPlace(sin, sout);
 			volsTrouver = rechercheVol(destination, date, nbPersonne);
 			
-			if(!volsTrouver.isEmpty())
+			if(!volsTrouver.isEmpty()){
 				sout.println(volsTrouver.toString());
+				dialogueChoixDuVol(sin, sout, volsTrouver);
+			}
 			else
 				sout.println("Aucun vol n'est disponible pour vos critères ");
 			
@@ -159,19 +160,65 @@ public class ServiceReservation implements Runnable{
 	 */
 	private boolean dialogueDemandeNouvelleRecherche(BufferedReader sin, PrintWriter sout) throws IOException {
 		String reponse;
+		boolean bonneReponse = false;
 		envoieMessage("Voulez-vous faire une nouvelle recherche (oui ou non) ?", sout);
 		reponse = sin.readLine();
-		sout.println(reponse);
-		while((!reponse.equals("oui")) && (!reponse.equals("non"))){
+		//verification de la reponse
+		while(!bonneReponse){
+			if(reponse.equalsIgnoreCase("oui") || reponse.equalsIgnoreCase("non"))
+				bonneReponse = true;
+			else 
+				reponse = sin.readLine();
+		}
+		
+		if(reponse.equalsIgnoreCase("oui"))
+			return true;
+		return false;
+	}
+	/**
+	 * Methode permettant au client de choisir son vol parmi ceux validant ses criteres 
+	 * @param sin le PrintWriter attribué à la socket 
+	 * @param sout le BufferedReader attribué à la socket 
+	 * @param volsSelectionner une liste de vol validant les criteres
+	 * @throws IOException
+	 */
+	public void dialogueChoixDuVol(BufferedReader sin, PrintWriter sout,List<Vol> volsSelectionner) throws IOException{
+		int reponse;
+		boolean volTrouver = false;
+		boolean volConfirmer = false;
+		envoieMessage("Veuillez entrer le numéro du vol que vous souhaitez reserver", sout);
+		reponse =Integer.parseInt(sin.readLine());
+		//verification du vol parmi les vols possible
+		for(Vol v : volsSelectionner){
+			if(v.getNumero() == reponse){
+				volTrouver = true;
+				break;
+			}
+		}
+		volConfirmer = dialogueDemandeconfirmation(sin, sout);
+		if(volTrouver && volConfirmer)
+			envoieMessage("Votre vol est maintenant reserver", sout);
+	}
+	
+	/**
+	 * Methode de demande au client la confirmation du choix de son vol
+	 * @param sin le PrintWriter attribué à la socket 
+	 * @param sout le BufferedReader attribué à la socket 
+	 * @return boolean true si le client confirme le vol false sinon
+	 * @throws IOException
+	 */
+	private boolean dialogueDemandeconfirmation(BufferedReader sin, PrintWriter sout) throws IOException {
+		String reponse;
+		envoieMessage("Confirmez vous le choix de ce vol (oui ou non) ?", sout);
+		reponse = sin.readLine();
+		while((!reponse.equalsIgnoreCase("oui")) && (!reponse.equalsIgnoreCase("non"))){
 			envoieMessage("Vous devez répondre par oui ou non", sout);
 			reponse = sin.readLine();
 		}
-		if(reponse.equals("oui"))
+		if(reponse.equalsIgnoreCase("oui"))
 			return true;
 		return false;
-		
 	}
-	
 	
 	/**
 	 * Permet la verification (au niveau syntaxique) de la destination entrer par le client
@@ -215,5 +262,4 @@ public class ServiceReservation implements Runnable{
 		}
 		return volSelectionner;
 	}
-
 }
