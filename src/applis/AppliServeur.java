@@ -1,6 +1,7 @@
 package applis;
 
 import java.io.IOException;
+
 import serveur.Serveur;
 
 public class AppliServeur {
@@ -13,9 +14,6 @@ public class AppliServeur {
 		} catch (IOException e) {
 			System.out.println("Erreur de lancement serveur sur le port choisi");
 		}
-		
-		
-		
 	}
 
 }

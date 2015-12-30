@@ -17,10 +17,10 @@ public class ServiceReservation implements Runnable{
 	private Thread t;
 	private List<Vol> vols;
 	
-	public  ServiceReservation(Socket s) throws ClassNotFoundException, IOException {
+	public  ServiceReservation(Socket s) throws FileNotFoundException {
 		this.client = s;
 		this.t = new Thread(this);
-		this.vols = LecteurFicherVol.serialisationBinToList();
+		this.vols = LecteurFicherVol.ficherTextToList("vols.txt");
 	}
 	
 
@@ -54,8 +54,8 @@ public class ServiceReservation implements Runnable{
 		PrintWriter sout = new PrintWriter(client.getOutputStream(), true);
 		//sout.println("Client vous etes connecter et pres a reserver !");
 		
-		String reponseAEnvoyer =""; //String pour la réception des messages du client
-		String reponseDuClient = ""; //String pour l'envoie du message au client
+		//String reponseAEnvoyer =""; //String pour la réception des messages du client
+		//String reponseDuClient = ""; //String pour l'envoie du message au client
 		
 		sout.println("Nouvelle session ");
 		sout.flush();
@@ -64,33 +64,28 @@ public class ServiceReservation implements Runnable{
 		String date = "";
 		int nbPersonne = 0;
 		List<Vol> volsTrouver = new ArrayList<Vol>();
-		boolean reservationTerminer = false;
-		//envoi des vols disponible
-		sout.println("vols disponible \n" + this.afficherVols());
+		//envoi des vol dispo
+		sout.println("vols dispo \n" + this.vols.toString());
 		sout.flush();
-		while(!reponseDuClient.equals("stop") && !reservationTerminer){
-	
+		do {
 			destination = dialogueDemandeDestination(sin, sout);
 			date = dialogueDemandeDate(sin, sout);
 			nbPersonne = dialogueDemandeNbPlace(sin, sout);
 			volsTrouver = rechercheVol(destination, date, nbPersonne);
 			
-			if(!volsTrouver.isEmpty()){
+			if(!volsTrouver.isEmpty())
 				sout.println(volsTrouver.toString());
-				//demande de confimation de la reservation
-				boolean confirmation =dialogueDemandeConfirmation(sin, sout);
-				//si la reservation est confirmée alors on stop la demande
-				if(confirmation){
-					reservationTerminer=true;
-					sout.println("Votre reservation a été prise en compte \n Deconnexion en cours");
-				}
-			}
 			else
 				sout.println("Aucun vol n'est disponible pour vos critères ");
-		}
-		sout.println("stop");
+			
+			
+			
+		} while(dialogueDemandeNouvelleRecherche(sin, sout));
+		sout.println("Stop");
 		//FERMETURE DE LA SOCKET ET TERMINAISON DU THREAD
 		this.client.close();
+		sout.close();
+		sin.close();
 		this.terminer();
 	}
 	
@@ -138,7 +133,7 @@ public class ServiceReservation implements Runnable{
 		return date;
 	}
 	/**
-	 * Methode permetant le nombre de place à reserver au client
+	 * Methode permetant la demande du nombre de place à reserver au client
 	 * @param sin le PrintWriter attribué à la socket 
 	 * @param sout le BufferedReader attribué à la socket 
 	 * @return le nombre de place (int) une fois saisie et verifiée
@@ -155,13 +150,26 @@ public class ServiceReservation implements Runnable{
 		}
 		return nbPersonne;
 	}
-	private boolean dialogueDemandeConfirmation(BufferedReader sin, PrintWriter sout) throws IOException{
-		envoieMessage("Veuillez confirmer cette reservation [oui/non]", sout);
-		String confirmation = sin.readLine();
-		if(confirmation.equalsIgnoreCase("oui"))
+	/**
+	 * Methode permetant la demande d'arret au client
+	 * @param sin le PrintWriter attribué à la socket 
+	 * @param sout le BufferedReader attribué à la socket 
+	 * @return boolean true si le client veut une nouvelle recherche false sinon
+	 * @throws IOException
+	 */
+	private boolean dialogueDemandeNouvelleRecherche(BufferedReader sin, PrintWriter sout) throws IOException {
+		String reponse;
+		envoieMessage("Voulez-vous faire une nouvelle recherche (oui ou non) ?", sout);
+		reponse = sin.readLine();
+		sout.println(reponse);
+		while((!reponse.equals("oui")) && (!reponse.equals("non"))){
+			envoieMessage("Vous devez répondre par oui ou non", sout);
+			reponse = sin.readLine();
+		}
+		if(reponse.equals("oui"))
 			return true;
-		else
-			return false;	
+		return false;
+		
 	}
 	
 	
@@ -207,24 +215,5 @@ public class ServiceReservation implements Runnable{
 		}
 		return volSelectionner;
 	}
-	/**
-	 * Methode permettant la sauvegarde de la liste des vols dans un fichier binaire
-	 * @throws FileNotFoundException
-	 */
-	public void sauvegardeVols() throws FileNotFoundException{
-		LecteurFicherVol.serialisationListToBin(this.vols);
-	}
-	private String afficherVols(){
-		String volsDisponible ="";
-		for(Vol v : this.vols)
-			volsDisponible+=v.toString();
-		return volsDisponible;
-	}
-	/**
-	 * Methode permettant d'éffectuer une reservation
-	 * @throws FileNotFoundException
-	 */
-	private void effectuerReservation() throws FileNotFoundException{
-		this.sauvegardeVols();
-	}
+
 }

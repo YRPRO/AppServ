@@ -43,10 +43,14 @@ public class ClientPrincipale implements Runnable{
 		String message = "";
 		boolean connecter = true;
 		//REPONSE VERS LE SERVEUR
-		while(connecter){
-			connecter  = this.socketClient.isConnected();
-			dialogue(sc, sin, sout);
-		}
+	
+		dialogue(sc, sin, sout);
+		sin.close();
+		sout.close();
+		sc.close();
+		System.out.println("l'application se ferme");
+		this.terminer();
+		
 		this.terminer();
 	}
 	
