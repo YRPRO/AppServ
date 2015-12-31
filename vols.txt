@@ -8,3 +8,12 @@
 8;Sydney;19/04/2016;810;BritishAirlines;500
 9;Istanbul;20/02/2016;400;TurkishAirlines;150
 10;Moscou;22/02/2016;300;Aeroflot;180
+11;Londres;03/05/2016;200;EasyJet;100
+12;Tokyo;16/05/2016;230;JapanAirlines;200
+13;Istanbul;18/05/2016;175;TurkishAirlines;150
+14;NewYork;17/05/2016;100;AirFrance;600
+15;NewYork;25/05/2016;160;AirFrance;600
+16;Sydney;08/05/2016;130;BritishAirlines;500
+17;Madrid;19/05/2016;140;RyanAir;175
+19;Rio;25/05/2016;190;FlyEmirats;700
+20;Moscou;16/05/2016;110;Aeroflot;180

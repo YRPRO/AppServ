@@ -130,7 +130,7 @@ public class ServiceReservation implements Runnable{
 		envoieMessage("Quel est la date de départ ?", sout);
 		date = sin.readLine();
 		while(!verifDate(date)){
-			envoieMessage("Veuillez entrer une date valide", sout);
+			envoieMessage("Veuillez entrer une date valide au format jj/mm/aaaa", sout);
 			date = sin.readLine();
 		}
 		return date;
@@ -197,9 +197,15 @@ public class ServiceReservation implements Runnable{
 				break;
 			}
 		}
-		volConfirmer = dialogueDemandeconfirmation(sin, sout);
+		//verification : le numero de vol doit correspondre à un vols selectionner
+		if(volTrouver)
+			volConfirmer = dialogueDemandeconfirmation(sin, sout);
+		else
+			envoieMessage("Le numéro de vol saisi ne correspond pas une nouvelle saisie est necessaire ", sout);
+		//si le numero de vol correspond et le vol est confirmé alors la reservation est effectuée
 		if(volTrouver && volConfirmer)
-			envoieMessage("Votre vol est maintenant reserver", sout);
+			envoieMessage("Votre vol est maintenant reserver (appuyer sur entrer)", sout);
+		
 	}
 	
 	/**

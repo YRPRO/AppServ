@@ -49,6 +49,6 @@ public class Vol implements Serializable{
 	public String toString() {
 		return "[numero=" + numero + "| destination=" + destination
 				+ "| date=" + date + "| nbPlace=" + nbPlace + "| compagnie="
-				+ compagnie + "| prix=" + prix + "]\n";
+				+ compagnie + "| prix=" + prix + "]" + "\n";
 	}
 }
