@@ -10,11 +10,12 @@ import java.util.List;
 
 import vol.LecteurFicherVol;
 import vol.Vol;
+import vol.VolsSimple;
 
-public class ServiceReservation implements Runnable{
+public class ServiceReservation implements Runnable, IService{
 	private Socket client;
 	private Thread t;
-	private List<Vol> vols;
+	private List<VolsSimple> vols;
 	
 	public  ServiceReservation(Socket s) throws ClassNotFoundException, IOException {
 		this.client = s;
@@ -43,10 +44,10 @@ public class ServiceReservation implements Runnable{
 	public void terminer(){
 		this.t.interrupt();
 	}
-	/**
-	 * Méthode contenant le traitement du service 
-	 * @throws IOException
+	/* (non-Javadoc)
+	 * @see service.IService#traitement()
 	 */
+	@Override
 	public void traitement() throws IOException{
 		//Streams pour le serveur
 		BufferedReader sin = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -61,7 +62,7 @@ public class ServiceReservation implements Runnable{
 		String destination = "";
 		String date = "";
 		int nbPersonne = 0;
-		List<Vol> volsTrouver = new ArrayList<Vol>();
+		List<VolsSimple> volsTrouver = new ArrayList<VolsSimple>();
 		//envoi des vol dispo
 		sout.println("vols dispo \n" + this.vols.toString());
 		sout.flush();
@@ -184,7 +185,7 @@ public class ServiceReservation implements Runnable{
 	 * @param volsSelectionner une liste de vol validant les criteres
 	 * @throws IOException
 	 */
-	public void dialogueChoixDuVol(BufferedReader sin, PrintWriter sout,List<Vol> volsSelectionner) throws IOException{
+	private void dialogueChoixDuVol(BufferedReader sin, PrintWriter sout,List<VolsSimple> volsSelectionner) throws IOException{
 		int reponse;
 		boolean volTrouver = false;
 		boolean volConfirmer = false;
@@ -262,9 +263,9 @@ public class ServiceReservation implements Runnable{
 	 * @param nbPlace (int)
 	 * @return une liste de vol contenant l'ensemble des vols correspondant aux critères du client
 	 */
-	private List<Vol> rechercheVol(String destination,String date,int nbPlace){
-		List<Vol> volSelectionner = new ArrayList<Vol>(); 
-		for(Vol v : this.vols){
+	private List<VolsSimple> rechercheVol(String destination,String date,int nbPlace){
+		List<VolsSimple> volSelectionner = new ArrayList<VolsSimple>(); 
+		for(VolsSimple v : this.vols){
 			if(v.getDestination().equalsIgnoreCase(destination) && v.getDate().equalsIgnoreCase(date) && v.getNbPlace() >= nbPlace)
 				volSelectionner.add(v);
 		}

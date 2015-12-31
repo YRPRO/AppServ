@@ -28,13 +28,13 @@ public class LecteurFicherVol {
 	 * @return une liste de vols
 	 * @throws FileNotFoundException
 	 */
-	public static List<Vol> ficherTextToList(String chemin) throws FileNotFoundException{
+	public static List<VolsSimple> ficherTextToList(String chemin) throws FileNotFoundException{
 		//creation du fichier 
 		File ficher = new File(chemin);
 		//creation d'un scanner
 		Scanner sc = new Scanner(ficher);
 		//liste contenant les vol
-		ArrayList<Vol> vols = new ArrayList<Vol>(); 
+		ArrayList<VolsSimple> vols = new ArrayList<VolsSimple>(); 
 		while(sc.hasNext()){
 			String ligne = sc.nextLine();
 			//recuperation des parametre dans un tableau
@@ -48,7 +48,7 @@ public class LecteurFicherVol {
 			float prix =Float.parseFloat(parametre[INDICE_PRIX]);
 			
 			//creation du vol 
-			vols.add(new Vol(numero, destination, date, nbPlace, compagnie, prix));
+			vols.add(new VolsSimple(numero, destination, date, nbPlace, compagnie, prix));
 		}
 		//fermeture du scanner
 		sc.close();
@@ -61,10 +61,10 @@ public class LecteurFicherVol {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static List<Vol> serialisationBinToList() throws IOException, ClassNotFoundException{
+	public static List<VolsSimple> serialisationBinToList() throws IOException, ClassNotFoundException{
 		FileInputStream fichier = new FileInputStream(NOM_FICHIER_BIN_SAUV);
 		ObjectInputStream volSerialiser = new ObjectInputStream(fichier);
-		List<Vol> volRecuperer = (List<Vol>) volSerialiser.readObject();
+		List<VolsSimple> volRecuperer =  (List<VolsSimple>) volSerialiser.readObject();
 		volSerialiser.close();
 		return volRecuperer;
 	}
@@ -73,7 +73,7 @@ public class LecteurFicherVol {
 	 * @param volsAserialiser
 	 * @throws FileNotFoundException
 	 */
-	public static void serialisationListToBin(List<Vol> volsAserialiser) throws FileNotFoundException{
+	public static void serialisationListToBin(List<VolsSimple> volsAserialiser) throws FileNotFoundException{
 		FileOutputStream fichierVols = new FileOutputStream(NOM_FICHIER_BIN_SAUV);
 		try {
 			ObjectOutputStream objVols = new ObjectOutputStream(fichierVols);

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import service.IService;
 import service.ServiceReservation;
 
 public class Serveur implements Runnable {
@@ -31,7 +32,7 @@ public class Serveur implements Runnable {
 					Socket socketClient = this.getSocketServeur().accept();
 					System.out.println("connexion avec le client reussi ");
 					//creation du service
-					ServiceReservation serviceReservation = new ServiceReservation(socketClient);
+					IService serviceReservation = new ServiceReservation(socketClient);
 					//lancement du service
 					serviceReservation.lancer();
 				}

@@ -23,7 +23,7 @@ public class ClientPrincipale implements Runnable{
 		try {
 			this.traitement();
 		} catch (IOException e) {
-			System.out.println("Erreur : probleme dans le stream du client");
+			System.out.println("Erreur : probleme dans le stream du client ");
 		}
 	}
 	
@@ -37,8 +37,8 @@ public class ClientPrincipale implements Runnable{
 	
 	public void traitement() throws IOException{
 		//creation de stream d'acces au service
-		BufferedReader sin = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
-		PrintWriter sout = new PrintWriter(socketClient.getOutputStream(), true);
+		BufferedReader sin = new BufferedReader(new InputStreamReader(this.socketClient.getInputStream()));
+		PrintWriter sout = new PrintWriter(this.socketClient.getOutputStream(), true);
 		Scanner sc = new Scanner(System.in);
 		String message = "";
 		boolean connecter = true;
