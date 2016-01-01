@@ -7,22 +7,36 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 import vol.LecteurFicherVol;
 import vol.Vol;
 import vol.VolsSimple;
 
 public class ServiceReservation implements Runnable, IService{
+	private static final long TEMPS_TIMEOUT = 600000; // 10 minutes
+	// timeout 30000; //30seconde 
 	private Socket client;
 	private Thread t;
 	private List<VolsSimple> vols;
+	private Timer tempsEcouler;
 	
 	public  ServiceReservation(Socket s) throws ClassNotFoundException, IOException {
 		this.client = s;
 		this.t = new Thread(this);
 		this.vols = LecteurFicherVol.serialisationBinToList();
+		this.tempsEcouler = new Timer();
+		//lancement de la tache planifier
+		tempsEcouler.schedule(new TimeOutServiceReservation(this), TEMPS_TIMEOUT);
 	}
 	
+	public Socket getSocket(){
+		return this.client;
+	}
+	
+	public Thread getThread(){
+		return this.t;
+	}
 
 	@Override
 	public void run() {
