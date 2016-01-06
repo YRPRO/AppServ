@@ -48,7 +48,7 @@ public class ClientPrincipale implements Runnable{
 		sin.close();
 		sout.close();
 		sc.close();
-		System.out.println("l'application se ferme");
+		System.out.println("L'application s'est fermée");
 		this.terminer();
 		
 		this.terminer();
