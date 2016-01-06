@@ -67,9 +67,6 @@ public class ServiceReservation implements Runnable, IService{
 		BufferedReader sin = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		PrintWriter sout = new PrintWriter(client.getOutputStream(), true);
 		
-		//String reponseAEnvoyer =""; //String pour la réception des messages du client
-		//String reponseDuClient = ""; //String pour l'envoie du message au client
-		
 		sout.println("Nouvelle session ");
 		sout.flush();
 		
@@ -77,7 +74,7 @@ public class ServiceReservation implements Runnable, IService{
 		String date = "";
 		int nbPersonne = 0;
 		List<VolsSimple> volsTrouver = new ArrayList<VolsSimple>();
-		//envoi des vol dispo
+		//envoi des vols dispo
 		sout.println("vols dispo \n" + this.vols.toString());
 		sout.flush();
 		do {
@@ -88,12 +85,15 @@ public class ServiceReservation implements Runnable, IService{
 			
 			if(!volsTrouver.isEmpty()){
 				sout.println(volsTrouver.toString());
-				dialogueChoixDuVol(sin, sout, volsTrouver);
+				dialogueChoixDuVol(sin, sout, volsTrouver,nbPersonne);
 			}
 			else
 				sout.println("Aucun vol n'est disponible pour vos critères ");
 			
 		} while(dialogueDemandeNouvelleRecherche(sin, sout));
+		synchronized (this.vols) {
+			LecteurFicherVol.serialisationListToBin(this.vols);
+		}
 		sout.println("Stop");
 		//FERMETURE DE LA SOCKET ET TERMINAISON DU THREAD
 		this.client.close();
@@ -197,9 +197,10 @@ public class ServiceReservation implements Runnable, IService{
 	 * @param sin le PrintWriter attribué à la socket 
 	 * @param sout le BufferedReader attribué à la socket 
 	 * @param volsSelectionner une liste de vol validant les criteres
+	 * @param nbPersonne 
 	 * @throws IOException
 	 */
-	private void dialogueChoixDuVol(BufferedReader sin, PrintWriter sout,List<VolsSimple> volsSelectionner) throws IOException{
+	private void dialogueChoixDuVol(BufferedReader sin, PrintWriter sout,List<VolsSimple> volsSelectionner, int nbPersonne) throws IOException{
 		int reponse;
 		boolean volTrouver = false;
 		boolean volConfirmer = false;
@@ -218,8 +219,12 @@ public class ServiceReservation implements Runnable, IService{
 		else
 			envoieMessage("Le numéro de vol saisi ne correspond pas une nouvelle saisie est necessaire ", sout);
 		//si le numero de vol correspond et le vol est confirmé alors la reservation est effectuée
-		if(volTrouver && volConfirmer)
+		if(volTrouver && volConfirmer){
 			envoieMessage("Votre vol est maintenant reserver (appuyer sur entrer)", sout);
+			//suppression des place
+			supprimerPlace(this.vols, reponse, nbPersonne);
+		}
+			
 		
 	}
 	
@@ -238,9 +243,22 @@ public class ServiceReservation implements Runnable, IService{
 			envoieMessage("Vous devez répondre par oui ou non", sout);
 			reponse = sin.readLine();
 		}
-		if(reponse.equalsIgnoreCase("oui"))
+		if(reponse.equalsIgnoreCase("oui")){
 			return true;
+		}
 		return false;
+	}
+	/**
+	 * Methode permettan de supprimer des place dans un vol et donc de valider la réservation
+	 * @param vols liste de vols disponible
+	 * @param numeroVol le numéro du vol concerné
+	 * @param nbPlaceAreserver le nombre de place à reserver
+	 */
+	synchronized private void supprimerPlace(List<VolsSimple> vols, int numeroVol, int nbPlaceAreserver){
+		for(Vol v : vols){
+			if(v.getNumero() == numeroVol)
+				v.setNbPlace(v.getNbPlace() - nbPlaceAreserver);
+		}
 	}
 	
 	/**
@@ -257,8 +275,6 @@ public class ServiceReservation implements Runnable, IService{
 	 * @return true si la syntaxe est correcte false sinon
 	 */
 	private  boolean verifDate(String date){	
-		//ancienne regex
-		//"^(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}$"
 		String dateRegex = "^(3[01]|[12][0-9]|0[1-9])/(1[0-2]|0[1-9])/[0-9]{4}$";
 		return (date.length()!=0 && date.matches(dateRegex) );
 	}

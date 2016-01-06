@@ -44,6 +44,9 @@ public class Vol implements Serializable{
 	public float getPrix() {
 		return prix;
 	}
+	public void setNbPlace(int nb){
+		this.nbPlace = nb;
+	}
 
 	@Override
 	public String toString() {

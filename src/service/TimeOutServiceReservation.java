@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.TimerTask;
 /**
  * class permettant caracterisant la tache planifier : interrompre la session du service reservation
- * @author YR
  *
  */
 public class TimeOutServiceReservation extends TimerTask{
