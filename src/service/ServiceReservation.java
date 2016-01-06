@@ -74,10 +74,11 @@ public class ServiceReservation implements Runnable, IService{
 		String date = "";
 		int nbPersonne = 0;
 		List<VolsSimple> volsTrouver = new ArrayList<VolsSimple>();
-		//envoi des vols dispo
-		sout.println("vols dispo \n" + this.vols.toString());
-		sout.flush();
+		
 		do {
+			//envoi des vols dispo
+			sout.println("vols dispo \n" + this.vols.toString());
+			sout.flush();
 			destination = dialogueDemandeDestination(sin, sout);
 			date = dialogueDemandeDate(sin, sout);
 			nbPersonne = dialogueDemandeNbPlace(sin, sout);
