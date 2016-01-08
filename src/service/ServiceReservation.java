@@ -208,23 +208,47 @@ public class ServiceReservation implements Runnable, IService{
 		envoieMessage("Veuillez entrer le numéro du vol que vous souhaitez reserver", sout);
 		reponse =Integer.parseInt(sin.readLine());
 		//verification du vol parmi les vols possible
-		for(Vol v : volsSelectionner){
-			if(v.getNumero() == reponse){
-				volTrouver = true;
-				break;
+			for(Vol v : volsSelectionner){
+				if(v.getNumero() == reponse){
+					volTrouver = true;
+					break;
+				}
 			}
-		}
-		//verification : le numero de vol doit correspondre à un vols selectionner
+		
+		
+		//verification : le numero de vol doit correspondre à un vol selectionner
 		if(volTrouver)
 			volConfirmer = dialogueDemandeconfirmation(sin, sout);
-		else
-			envoieMessage("Le numéro de vol saisi ne correspond pas une nouvelle saisie est necessaire ", sout);
+		else{
+			do{
+				envoieMessage("Le numéro de vol saisi ne correspond pas une nouvelle saisie est necessaire ", sout);
+				reponse =Integer.parseInt(sin.readLine());
+				for(Vol v : volsSelectionner){
+					if(v.getNumero() == reponse){
+						volTrouver = true;
+						break;
+					}
+				}
+			}
+			while(!volTrouver);
+			volConfirmer = dialogueDemandeconfirmation(sin, sout);
+		}			
+		
 		//si le numero de vol correspond et le vol est confirmé alors la reservation est effectuée
 		if(volTrouver && volConfirmer){
 			envoieMessage("Votre vol est maintenant reserver (appuyer sur entrer)", sout);
 			//suppression des place
 			supprimerPlace(this.vols, reponse, nbPersonne);
 		}
+		else if(dialogueDemandeNouvelleRecherche(sin, sout))
+			this.traitement();
+		else{
+			//on ferme l'application dans ce cas
+			envoieMessage("stop", sout);
+			this.client.close();
+			this.terminer();
+		}
+			
 			
 		
 	}
